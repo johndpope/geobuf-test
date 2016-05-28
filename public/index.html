@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
+
+    <!-- <script src='/js/pbf-dev-1.3.5.js'></script> -->
+    <script src='/js/pbf-dev-1.3.6.js'></script>
+    
+    <script src='/js/geobuf-dev.js'></script>
+    
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.js'></script>
+
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.18.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<script>
+mapboxgl.accessToken = 'pk.eyJ1IjoiYXZlcmFzIiwiYSI6ImRrb1Z6NXcifQ.8v3wimUeRVTvOMbozrwkfw';
+var map = new mapboxgl.Map({
+    container: 'map', // container id
+    style: 'mapbox://styles/mapbox/streets-v8', //stylesheet location
+    center: [14.995651, 59.520781], // starting position
+    zoom: 13 // starting zoom
+});
+
+map.on("load", function() {
+  
+  var req = new XMLHttpRequest();
+  req.open("GET", "/data", true);
+  req.responseType = "arraybuffer";
+
+  req.onload = function(oEvent) {
+    var geojson = geobuf.decode(new Pbf(req.response));
+    map.addSource('vector', {
+      'type': 'geojson',
+      'data': geojson
+    });
+    map.addLayer({
+      'id': 'vector',
+      'type': 'fill',
+      'source': 'vector',
+      'layout': {},
+      'paint': {
+        'fill-color': '#088',
+        'fill-opacity': 0.8
+      }
+    });
+  };
+  req.send();
+});
+
+</script>
+
+</body>
+</html>
